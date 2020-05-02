@@ -1,1 +1,1 @@
-# Vimeo Private Embed Downloader Chrome Extension
+# Vimeo Private Embed Downloader
