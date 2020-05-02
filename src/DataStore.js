@@ -5,6 +5,8 @@ const DataStore = (() => {
     const get = (name, defaultValue = null) => JSON.parse(localStorage.getItem(name) || JSON.stringify(defaultValue));
     const set = (name, data) => localStorage.setItem(name, JSON.stringify(data));
 
+    const isCacheValid = videoData => new Date(videoData.__creationTime).getTime() + CACHE_TIMEOUT_MINUTES * 60 * 1000 > new Date().getTime();
+
     const getStoredVideoData = tabId =>
         get(VIDEO_DATA_LIST_KEY, [])
             .find(videoData =>
@@ -12,7 +14,7 @@ const DataStore = (() => {
                 videoData.tabId == tabId
                 && (
                     // check if the data is still relevant
-                    new Date(videoData.__creationTime).getTime() + CACHE_TIMEOUT_MINUTES * 60 * 1000 > new Date().getTime()
+                    isCacheValid(videoData)
                     // otherwise, wipeout from storage
                     || clearVideoDataStorage()
                 )
@@ -30,7 +32,7 @@ const DataStore = (() => {
         get(VIDEO_DATA_LIST_KEY, [])
             .filter(videoData => tabId
                 ? videoData.tabId != tabId
-                : new Date(videoData.__creationTime).getTime() + CACHE_TIMEOUT_MINUTES * 60 * 1000 > new Date().getTime()
+                : isCacheValid(videoData)
             )
     );
 
