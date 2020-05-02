@@ -14,7 +14,7 @@ const DataStore = (() => {
                     // check if the data is still relevant
                     new Date(videoData.__creationTime).getTime() + CACHE_TIMEOUT_MINUTES * 60 * 1000 > new Date().getTime()
                     // otherwise, wipeout from storage
-                    || clearVideoDataStorage(tabId)
+                    || clearVideoDataStorage()
                 )
             );
 
@@ -27,11 +27,12 @@ const DataStore = (() => {
     );
 
     const clearVideoDataStorage = (tabId = null) => set(VIDEO_DATA_LIST_KEY,
-        tabId
-            ? get(VIDEO_DATA_LIST_KEY, [])
-                .filter(videoData => videoData.tabId != tabId)
-            : []
+        get(VIDEO_DATA_LIST_KEY, [])
+            .filter(videoData => tabId
+                ? videoData.tabId != tabId
+                : new Date(videoData.__creationTime).getTime() + CACHE_TIMEOUT_MINUTES * 60 * 1000 > new Date().getTime()
+            )
     );
-    
+
     return { getStoredVideoData, storeVideoData, clearVideoDataStorage };
 })();

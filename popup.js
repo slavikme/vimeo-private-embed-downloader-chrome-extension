@@ -15,7 +15,7 @@ const getVideoData = async () => {
     const activeTab = await getActiveTab();
     const tabId = activeTab.id;
     let videoData = getStoredVideoData(tabId);
-    if ( !videoData ) {
+    if (!videoData) {
         showLoader();
         const embedUrl = await getEmbedURL(tabId);
         videoData = await retrieveVideoData(embedUrl);
@@ -47,8 +47,14 @@ const createLinkElement = ({ url, quality, size }, title = "") => {
     a.innerText = `${quality} (${size.formatted})`;
     a.addEventListener('click', event => {
         event.preventDefault();
-        chrome.runtime.sendMessage(`feebjagfliobfjohmnipeoekmenfgbng`, {url, filename});
-        // downloadVideo(quality);
+        chrome.runtime.sendMessage(
+            // try to download using 'Aria2 for Chrome' extension
+            `feebjagfliobfjohmnipeoekmenfgbng`,
+            { url, filename },
+            response => response?.status === 'success'
+                // otherwise, use default one
+                || downloadVideo(quality)
+        );
     });
     return a;
 };
