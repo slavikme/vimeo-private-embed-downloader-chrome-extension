@@ -67,5 +67,5 @@ const DataRetriever = (() => {
         })
     );
 
-    return { retrieveVideoData, getEmbedURL };
+    return { retrieveVideoData, getEmbedURL, extractVideoIdFromUrl };
 })();

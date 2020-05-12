@@ -7,11 +7,11 @@ const DataStore = (() => {
 
     const isCacheValid = videoData => new Date(videoData.__creationTime).getTime() + CACHE_TIMEOUT_MINUTES * 60 * 1000 > new Date().getTime();
 
-    const getStoredVideoData = tabId =>
+    const getStoredVideoData = videoId =>
         get(VIDEO_DATA_LIST_KEY, [])
             .find(videoData =>
-                // find for the first occurence of the videoData
-                videoData.tabId == tabId
+                // find the first occurence of the videoData
+                videoData.id == videoId
                 && (
                     // check if the data is still relevant
                     isCacheValid(videoData)
@@ -20,18 +20,18 @@ const DataStore = (() => {
                 )
             );
 
-    const storeVideoData = (videoData, tabId) => set(VIDEO_DATA_LIST_KEY,
+    const storeVideoData = videoData => set(VIDEO_DATA_LIST_KEY,
         [
             // push the videoData at the beginning of the list 
-            { tabId, __creationTime: new Date, ...videoData },
+            { __creationTime: new Date, ...videoData },
             ...get(VIDEO_DATA_LIST_KEY, [])
         ]
     );
 
-    const clearVideoDataStorage = (tabId = null) => set(VIDEO_DATA_LIST_KEY,
+    const clearVideoDataStorage = (videoId = null) => set(VIDEO_DATA_LIST_KEY,
         get(VIDEO_DATA_LIST_KEY, [])
-            .filter(videoData => tabId
-                ? videoData.tabId != tabId
+            .filter(videoData => videoId
+                ? videoData.id != videoId
                 : isCacheValid(videoData)
             )
     );

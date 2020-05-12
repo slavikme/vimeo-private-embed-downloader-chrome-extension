@@ -1,5 +1,5 @@
 const { getStoredVideoData, storeVideoData } = DataStore;
-const { retrieveVideoData, getEmbedURL } = DataRetriever;
+const { retrieveVideoData, getEmbedURL, extractVideoIdFromUrl } = DataRetriever;
 
 const getActiveTab = () => new Promise((resolve, reject) =>
     chrome.tabs.query({
@@ -13,13 +13,14 @@ const getActiveTab = () => new Promise((resolve, reject) =>
 
 const getVideoData = async () => {
     const activeTab = await getActiveTab();
-    const tabId = activeTab.id;
-    let videoData = getStoredVideoData(tabId);
+    const embedUrl = await getEmbedURL(activeTab.id);
+    const videoId = extractVideoIdFromUrl(embedUrl);
+
+    let videoData = getStoredVideoData(videoId);
     if (!videoData) {
         showLoader();
-        const embedUrl = await getEmbedURL(tabId);
         videoData = await retrieveVideoData(embedUrl);
-        storeVideoData(videoData, tabId);
+        storeVideoData(videoData);
     }
     return videoData;
 };

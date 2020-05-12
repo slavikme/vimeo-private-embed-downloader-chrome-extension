@@ -1,7 +1,7 @@
 const { getStoredVideoData, storeVideoData } = DataStore;
-const { retrieveVideoData, getEmbedURL } = DataRetriever;
+const { retrieveVideoData, getEmbedURL, extractVideoIdFromUrl } = DataRetriever;
 
-chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo) => {
     if (["complete"].indexOf(changeInfo.status) == -1)
         return;
 
@@ -9,7 +9,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
         const embedUrl = await getEmbedURL(tabId);
         chrome.pageAction.show(tabId);
         try {
-            await doProcessVideoDataRetrieval(tabId, embedUrl);
+            await doProcessVideoDataRetrieval(embedUrl);
         } catch (e) {
             console.error(e);
         }
@@ -18,17 +18,16 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     }
 });
 
-const doProcessVideoDataRetrieval = async (tabId, url) => {
-    url = url || await getEmbedURL(tabId);
-
-    const cachedData = getStoredVideoData(tabId);
+const doProcessVideoDataRetrieval = async url => {
+    const videoId = extractVideoIdFromUrl(url);
+    const cachedData = getStoredVideoData(videoId);
     if (cachedData) {
-        console.log('Using cache. No need to update.')
+        console.log('Using cache. No need to update.');
         return cachedData;
     }
 
     const videoData = await retrieveVideoData(url);
-    storeVideoData(videoData, tabId);
+    storeVideoData(videoData);
     return videoData;
 };
 
