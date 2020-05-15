@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "Vimeo Private Embed Downloader",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "background": {
         "scripts": [
             "src/DataRetriever.js",
@@ -11,8 +11,8 @@
         "persistent": false
     },
     "permissions": [
-        "<all_urls>",
-        "tabs",
+        "https://*.vhx.tv/",
+        "activeTab",
         "downloads",
         "webNavigation"
     ],
